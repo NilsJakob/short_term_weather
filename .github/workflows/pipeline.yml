@@ -47,5 +47,6 @@ jobs:
 
             git commit -m "Update data [auto]" || echo "No changes"
 
-            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ 
+            github.repository }} HEAD:main
 
