@@ -1,0 +1,9 @@
+
+LAT = 59.3
+LON = 10.4
+
+FROST_CLIENT_ID = "225ff68b-97d7-426c-9e8e-70a9c0dfeb30"
+
+USER_AGENT = "short-term-weather/0.1"
+
+FORECAST_HORIZON_HOURS = 1
