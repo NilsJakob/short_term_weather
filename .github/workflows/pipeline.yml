@@ -2,42 +2,29 @@ name: Weather Pipeline
 
 on:
   schedule:
-    - cron: "0 * * * *"   # ✅ runs every hour
-  workflow_dispatch:       # ✅ allows manual run
-
+    - cron: "0 * * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
-
 
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
 
-    
-    env:
-      FROST_CLIENT_ID: ${{ secrets.FROST_CLIENT_ID }}
-
-
     steps:
-      - name: ✅ Checkout repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
 
-      - name: ✅ Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      - name: ✅ Install dependencies
-        run: |
-          pip install -r requirements.txt
+      - run: pip install -r requirements.txt
 
-      - name: ✅ Run pipeline
-        run: |
-          python -m src.pipeline
+      - run: python -m src.pipeline
 
-      
-        
       - name: ✅ Commit and push results
         run: |
           git config user.name "github-actions"
@@ -47,6 +34,6 @@ jobs:
 
           git commit -m "Update data [auto]" || echo "No changes"
 
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ 
-          github.repository }} HEAD:main
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
 
+          git push origin HEAD:main
