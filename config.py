@@ -1,4 +1,9 @@
 
+import os
+
+FROST_CLIENT_ID = os.getenv("FROST_CLIENT_ID")
+
+
 LAT = 59.137344
 LON = 9.671435
 

@@ -1,0 +1,43 @@
+name: Weather Pipeline
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # ✅ runs every hour
+  workflow_dispatch:       # ✅ allows manual run
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+
+    
+    env:
+      FROST_CLIENT_ID: ${{ secrets.FROST_CLIENT_ID }}
+
+
+    steps:
+      - name: ✅ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: ✅ Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: ✅ Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: ✅ Run pipeline
+        run: |
+          python -m src.pipeline
+
+      - name: ✅ Commit results
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add data/
+
+          git commit -m "Update data [auto]" || echo "No changes"
+
+          git push
