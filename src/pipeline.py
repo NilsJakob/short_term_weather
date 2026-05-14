@@ -5,7 +5,7 @@ import pandas as pd
 from src.forecast import get_forecast
 from src.observations import get_observation
 from src.verification import verify
-
+from src.build_dataset import build_dataset
 # ✅ Ensure folders exist
 os.makedirs("data/forecasts", exist_ok=True)
 os.makedirs("data/observations", exist_ok=True)
@@ -117,3 +117,4 @@ def verify_stored_forecasts():
 if __name__ == "__main__":
     run()
     verify_stored_forecasts()
+    build_dataset()
