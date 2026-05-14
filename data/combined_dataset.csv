@@ -1,3 +1,0 @@
-time_utc,temperature_fc,wind_fc,issued_at,wind_obs,station_id,temperature_obs,temp_error,wind_error,lead_time_minutes
-2026-05-14 09:00:00+00:00,5.6,1.7,2026-05-14 08:00:00+00:00,,SN18700,4.8,0.7999999999999998,,60.0
-2026-05-14 10:00:00+00:00,6.3,1.7,2026-05-14 09:00:00+00:00,2.1,SN18700,4.8,1.5,-0.4000000000000001,60.0

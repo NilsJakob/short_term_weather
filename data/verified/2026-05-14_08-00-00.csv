@@ -1,2 +1,0 @@
-time_utc,temperature_fc,wind_fc,issued_at,wind_obs,station_id,temperature_obs,temp_error,wind_error
-2026-05-14 09:00:00+00:00,5.6,1.7,2026-05-14 08:00:00+00:00,,SN18700,4.8,0.7999999999999998,
