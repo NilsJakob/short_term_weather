@@ -1,108 +1,117 @@
 import os
-import glob   
+import glob
 import pandas as pd
 
 from src.forecast import get_forecast
 from src.observations import get_observation
 from src.verification import verify
 
-
+# ✅ Ensure folders exist
 os.makedirs("data/forecasts", exist_ok=True)
-os.makedirs("data/verified", exist_ok=True)
 os.makedirs("data/observations", exist_ok=True)
-
+os.makedirs("data/verified", exist_ok=True)
+os.makedirs("data", exist_ok=True)
 
 
 def run():
+    print("\n🚀 Running pipeline")
+
+    # ✅ 1. Get forecast
     forecast = get_forecast()
 
     target_time = forecast["time_utc"].iloc[0]
-    now = pd.Timestamp.utcnow()
+    issued_at = pd.to_datetime(forecast["issued_at"].iloc[0])
 
-    safe_time = target_time.strftime("%Y-%m-%d_%H-%M-%S")
+    # ✅ Use issued_at for unique filenames
+    safe_time = issued_at.strftime("%Y-%m-%d_%H-%M-%S")
+
     print("SAFE TIME:", safe_time)
-    print("Now:", now)
     print("Target time:", target_time)
 
-    print("Saving forecast to:", f"data/forecasts/{target_time}.csv")
+    # ✅ 2. Save forecast
+    forecast_path = f"data/forecasts/{safe_time}.csv"
+    forecast.to_csv(forecast_path, index=False)
+    print("✅ Forecast saved:", forecast_path)
 
-    
-    print("⚠️ Forcing observation fetch (debug mode)")
+    # ✅ 3. Get observations
     obs = get_observation(target_time)
 
-    # skip if forecast is in the future
-    '''
-    if target_time > now:
-        print("Observation not available yet — skipping verification")
-
-        # Save forecast for later verification
-        safe_time = target_time.strftime("%Y-%m-%d_%H-%M-%S")
-        filepath = f"data/forecasts/{safe_time}.csv"
-
-        print("Saving forecast to:", filepath)
-        forecast.to_csv(filepath, index=False)
-        print("Forecast saved for later verification")
-
-        return'''
-    
-    obs = get_observation(target_time)
-
-    # Save observation
+    # ✅ Save observations
     obs_path = f"data/observations/{safe_time}.csv"
-    print("Saving observation to:", obs_path)
     obs.to_csv(obs_path, index=False)
-    print("Observation saved")
+    print("✅ Observation saved:", obs_path)
 
+    # ✅ 4. Verify
     result = verify(forecast, obs)
 
-    print(result)
+    print("✅ Verified rows:", len(result))
 
-    #Save verified result
-    result.to_csv(f"data/verified/{safe_time}.csv", index=False)
-    print("Verification saved")
+    # ✅ Save verification
+    result_path = f"data/verified/{safe_time}.csv"
+    result.to_csv(result_path, index=False)
+    print("✅ Verification saved:", result_path)
 
-
-    
 
 def verify_stored_forecasts():
+    print("\n🔁 Running verification of stored forecasts")
+
     files = glob.glob("data/forecasts/*.csv")
 
+    if not files:
+        print("⚠️ No stored forecasts found")
+        return
+
     for f in files:
+        print("\n📂 Processing:", f)
+
         forecast = pd.read_csv(f)
         forecast["time_utc"] = pd.to_datetime(forecast["time_utc"], utc=True)
 
         target_time = forecast["time_utc"].iloc[0]
+        issued_at = pd.to_datetime(forecast["issued_at"].iloc[0])
 
-        safe_time = target_time.strftime("%Y-%m-%d_%H-%M-%S")
+        safe_time = issued_at.strftime("%Y-%m-%d_%H-%M-%S")
 
+        # ✅ Skip future forecasts
         if target_time > pd.Timestamp.utcnow():
-            continue  # not ready yet
+            print("⏭ Skipping (future forecast)")
+            continue
 
-        print(f"✅ Verifying {target_time}")
+        print("✅ Verifying:", target_time)
 
-        
+        # ✅ Fetch observations
         obs = get_observation(target_time)
+        obs["time_utc"] = pd.to_datetime(obs["time_utc"], utc=True)
 
-        # ✅ Save observation
+        # ✅ Save observations
         obs_path = f"data/observations/{safe_time}.csv"
         obs.to_csv(obs_path, index=False)
-        print("✅ Observation saved:", safe_time)
+        print("✅ Observation saved:", obs_path)
 
-        
-        merged = forecast.merge(obs, on="time_utc", how="inner")
+        # ✅ Sort before merge_asof
+        forecast = forecast.sort_values("time_utc")
+        obs = obs.sort_values("time_utc")
 
-        print("Merged data:")
-        print(merged)
+        # ✅ Robust time alignment
+        merged = pd.merge_asof(
+            forecast,
+            obs,
+            on="time_utc",
+            direction="nearest",
+            tolerance=pd.Timedelta("1h")
+        )
 
-        # Keep your verification if you want
+        merged = merged.dropna(subset=["temperature_obs"])
+
+        print("✅ Merged rows:", len(merged))
+
+        # ✅ Verify
         result = verify(forecast, obs)
 
-        print(result)
+        result_path = f"data/verified/{safe_time}.csv"
+        result.to_csv(result_path, index=False)
 
-        # Save verified result
-        result.to_csv(f"data/verified/{safe_time}.csv", index=False)
-        print("Verification saved")
-
+        print("✅ Verification saved:", result_path)
 
 
 if __name__ == "__main__":

@@ -104,6 +104,35 @@ def get_observation(timestamp):
 
     # SELECT STATION HERE
     station_id, station_type = select_station()
+    
+    from pathlib import Path
+
+    log_path = Path("data/station_log.csv")
+
+    log_row = pd.DataFrame([{
+        "timestamp": datetime.now(timezone.utc),
+        "station_id": station_id,
+        "station_type": station_type
+    }])
+
+    # ✅ Append to file
+    if log_path.exists():
+        log_row.to_csv(log_path, mode="a", header=False, index=False)
+    else:
+        log_row.to_csv(log_path, index=False)
+
+    print(f"📝 Logged station usage: {station_id} ({station_type})")
+
+    
+    log_row = pd.DataFrame([{
+        "timestamp": datetime.now(timezone.utc),
+        "target_time": timestamp,
+        "station_id": station_id,
+        "station_type": station_type
+    }])
+
+    log_row = log_row.drop_duplicates()
+    
     print(f"📡 Using station: {station_id} ({station_type})")
 
 
@@ -114,7 +143,7 @@ def get_observation(timestamp):
     end = timestamp + pd.Timedelta(hours=2)
 
     params = {
-        "sources": "SN18700",
+        "sources": station_id,
         "elements": "air_temperature,wind_speed",
         "referencetime": f"{start.isoformat()}/{end.isoformat()}",
         "timeresolutions": "PT1H",
@@ -136,7 +165,8 @@ def get_observation(timestamp):
         for obs in entry["observations"]:
             rows.append({
                 "time_utc": entry["referenceTime"],
-                obs["elementId"]: obs["value"]
+                obs["elementId"]: obs["value"],
+                "station_id": station_id 
             })
 
     df = pd.DataFrame(rows)
