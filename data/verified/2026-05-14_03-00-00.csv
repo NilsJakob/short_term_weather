@@ -1,0 +1,2 @@
+time_utc,temperature_fc,wind_fc,issued_at,temperature_obs,wind_obs,temp_error,wind_error
+2026-05-14 03:00:00+00:00,5.7,1.9,2026-05-14 02:00:00+00:00,4.4,3.7,1.2999999999999998,-1.8000000000000003
