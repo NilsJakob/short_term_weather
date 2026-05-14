@@ -1,6 +1,8 @@
 
-LAT = 59.3
-LON = 10.4
+
+LAT = 59.137334
+LON = 9.671409
+
 
 FROST_CLIENT_ID = "225ff68b-97d7-426c-9e8e-70a9c0dfeb30"
 

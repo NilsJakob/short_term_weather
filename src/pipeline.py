@@ -21,36 +21,35 @@ def run():
 
     target_time = forecast["time_utc"].iloc[0]
     issued_at = pd.to_datetime(forecast["issued_at"].iloc[0])
-
-    # ✅ Use issued_at for unique filenames
     safe_time = issued_at.strftime("%Y-%m-%d_%H-%M-%S")
-
-    print("SAFE TIME:", safe_time)
-    print("Target time:", target_time)
 
     # ✅ 2. Save forecast
     forecast_path = f"data/forecasts/{safe_time}.csv"
     forecast.to_csv(forecast_path, index=False)
     print("✅ Forecast saved:", forecast_path)
 
-    # ✅ 3. Get observations
+    # ✅ 3. Get observation
     obs = get_observation(target_time)
 
-    # ✅ Save observations
+    # 🔴 ✅ PUT YOUR CHECK RIGHT HERE
+    if obs.empty:
+        print("⏭ Skipping verification — no valid local observation yet")
+        return
+
+    # ✅ 4. Save observation
     obs_path = f"data/observations/{safe_time}.csv"
     obs.to_csv(obs_path, index=False)
     print("✅ Observation saved:", obs_path)
 
-    # ✅ 4. Verify
+    # ✅ 5. Verify
     result = verify(forecast, obs)
 
     print("✅ Verified rows:", len(result))
 
-    # ✅ Save verification
+    # ✅ 6. Save verification
     result_path = f"data/verified/{safe_time}.csv"
     result.to_csv(result_path, index=False)
     print("✅ Verification saved:", result_path)
-
 
 def verify_stored_forecasts():
     print("\n🔁 Running verification of stored forecasts")

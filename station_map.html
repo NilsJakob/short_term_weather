@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_df9d54bba570576adbdfffe27e740119 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_df9d54bba570576adbdfffe27e740119" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_df9d54bba570576adbdfffe27e740119 = L.map(
+                "map_df9d54bba570576adbdfffe27e740119",
+                {
+                    center: [59.137334, 9.671409],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 11,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_9d41a337d1bd67d6481938e27cbbb135 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_9d41a337d1bd67d6481938e27cbbb135.addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var marker_1bbdce84b9757669e4271ecac2b5a3da = L.marker(
+                [59.137334, 9.671409],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_1b4b99e317136f07e6d4711c38ef0ae1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6eebdbeabd805dec3ddd5cf5484f11db = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4d39b4f37937466f34d47ea2956d3bb2 = $(`<div id="html_4d39b4f37937466f34d47ea2956d3bb2" style="width: 100.0%; height: 100.0%;">📍 Forecast location</div>`)[0];
+                popup_6eebdbeabd805dec3ddd5cf5484f11db.setContent(html_4d39b4f37937466f34d47ea2956d3bb2);
+            
+        
+
+        marker_1bbdce84b9757669e4271ecac2b5a3da.bindPopup(popup_6eebdbeabd805dec3ddd5cf5484f11db)
+        ;
+
+        
+    
+    
+                marker_1bbdce84b9757669e4271ecac2b5a3da.setIcon(icon_1b4b99e317136f07e6d4711c38ef0ae1);
+            
+    
+            var marker_1f9b9eecafe12d22fada41df6ebf5e63 = L.marker(
+                [59.1099744, 9.7357238],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_0e3bae9ef45ca4495c994ea22412e76d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_55258e8c455d8130280b3697b2f4aa5a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_227cdb1786db077459617b98bbecc537 = $(`<div id="html_227cdb1786db077459617b98bbecc537" style="width: 100.0%; height: 100.0%;">🆔 SN30247<br>E18 TELEMARKSPORTEN<br>5.4 °C<br>2026-05-14T19:10:00.000Z</div>`)[0];
+                popup_55258e8c455d8130280b3697b2f4aa5a.setContent(html_227cdb1786db077459617b98bbecc537);
+            
+        
+
+        marker_1f9b9eecafe12d22fada41df6ebf5e63.bindPopup(popup_55258e8c455d8130280b3697b2f4aa5a)
+        ;
+
+        
+    
+    
+                marker_1f9b9eecafe12d22fada41df6ebf5e63.setIcon(icon_0e3bae9ef45ca4495c994ea22412e76d);
+            
+    
+            var marker_21d2956523af5da507341cc952c916a8 = L.marker(
+                [59.0872, 9.6603],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_ba768c5432ab2bb8cdfdc269a38087de = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9fcec7dea3c32895e5ad9dba1ecc6d45 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8167a4ebc984abbf1ed94d88c8c1b61f = $(`<div id="html_8167a4ebc984abbf1ed94d88c8c1b61f" style="width: 100.0%; height: 100.0%;">🆔 SN30255<br>PORSGRUNN - ÅS<br>5.6 °C<br>2026-05-14T19:00:00.000Z</div>`)[0];
+                popup_9fcec7dea3c32895e5ad9dba1ecc6d45.setContent(html_8167a4ebc984abbf1ed94d88c8c1b61f);
+            
+        
+
+        marker_21d2956523af5da507341cc952c916a8.bindPopup(popup_9fcec7dea3c32895e5ad9dba1ecc6d45)
+        ;
+
+        
+    
+    
+                marker_21d2956523af5da507341cc952c916a8.setIcon(icon_ba768c5432ab2bb8cdfdc269a38087de);
+            
+    
+            var marker_041db233ea7e8be38abcaeeb1e2c6ed0 = L.marker(
+                [59.1255, 9.50767],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_2a8bc08ed94be3fe2f4bccb484d503b2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f330984ad1738159dce1bb4ce24172a1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6de4084fb55659adec764e121e434500 = $(`<div id="html_6de4084fb55659adec764e121e434500" style="width: 100.0%; height: 100.0%;">🆔 SN30280<br>FV353 BRUMYRDAL<br>6.1 °C<br>2026-05-14T19:10:00.000Z</div>`)[0];
+                popup_f330984ad1738159dce1bb4ce24172a1.setContent(html_6de4084fb55659adec764e121e434500);
+            
+        
+
+        marker_041db233ea7e8be38abcaeeb1e2c6ed0.bindPopup(popup_f330984ad1738159dce1bb4ce24172a1)
+        ;
+
+        
+    
+    
+                marker_041db233ea7e8be38abcaeeb1e2c6ed0.setIcon(icon_2a8bc08ed94be3fe2f4bccb484d503b2);
+            
+    
+            var marker_8f875176e529696019e99daae9932cf5 = L.marker(
+                [59.2268, 9.5772],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_3e79475cf5968a2503e5b7b5334e16cf = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_752de39cbc1b2d7f9c7389598eae01ba = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a71c25113f158b5fdbe0278bea9d30fe = $(`<div id="html_a71c25113f158b5fdbe0278bea9d30fe" style="width: 100.0%; height: 100.0%;">🆔 SN30330<br>GJERPEN - ÅRHUS<br>5.8 °C<br>2026-05-14T19:00:00.000Z</div>`)[0];
+                popup_752de39cbc1b2d7f9c7389598eae01ba.setContent(html_a71c25113f158b5fdbe0278bea9d30fe);
+            
+        
+
+        marker_8f875176e529696019e99daae9932cf5.bindPopup(popup_752de39cbc1b2d7f9c7389598eae01ba)
+        ;
+
+        
+    
+    
+                marker_8f875176e529696019e99daae9932cf5.setIcon(icon_3e79475cf5968a2503e5b7b5334e16cf);
+            
+    
+            var marker_9e9f62e8c91e51855cf2ce3fec8b184c = L.marker(
+                [59.2485, 9.66367],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_0dd0df836aa24bd219fe78e4a48709a2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fcfc35f0f165b457e61f4e23812aea6c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2e28771c3cd1a5d9081dadbd1603f144 = $(`<div id="html_2e28771c3cd1a5d9081dadbd1603f144" style="width: 100.0%; height: 100.0%;">🆔 SN30305<br>FV32 KIKUT<br>3.8 °C<br>2026-05-14T19:10:00.000Z</div>`)[0];
+                popup_fcfc35f0f165b457e61f4e23812aea6c.setContent(html_2e28771c3cd1a5d9081dadbd1603f144);
+            
+        
+
+        marker_9e9f62e8c91e51855cf2ce3fec8b184c.bindPopup(popup_fcfc35f0f165b457e61f4e23812aea6c)
+        ;
+
+        
+    
+    
+                marker_9e9f62e8c91e51855cf2ce3fec8b184c.setIcon(icon_0dd0df836aa24bd219fe78e4a48709a2);
+            
+    
+            var marker_ebf8d2a5ae6ebe78ce5fd0dffc5436bd = L.marker(
+                [59.0727, 9.923],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_d5577eb1f48e1a4311b37d1b4cfbbf70 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ef2d0b50f29a0c392b4326fdf84bbe2d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6a1f188e2a070ddb9ad655e84e941e8c = $(`<div id="html_6a1f188e2a070ddb9ad655e84e941e8c" style="width: 100.0%; height: 100.0%;">🆔 SN30244<br>E18 VASSBOTN<br>5.6 °C<br>2026-05-14T19:10:00.000Z</div>`)[0];
+                popup_ef2d0b50f29a0c392b4326fdf84bbe2d.setContent(html_6a1f188e2a070ddb9ad655e84e941e8c);
+            
+        
+
+        marker_ebf8d2a5ae6ebe78ce5fd0dffc5436bd.bindPopup(popup_ef2d0b50f29a0c392b4326fdf84bbe2d)
+        ;
+
+        
+    
+    
+                marker_ebf8d2a5ae6ebe78ce5fd0dffc5436bd.setIcon(icon_d5577eb1f48e1a4311b37d1b4cfbbf70);
+            
+    
+            var marker_7eac625bec8081b0becd74184c4f70df = L.marker(
+                [59.0644161, 9.9423322],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_51052b49d78261fa4c8c575a12e9330c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d65b2429ed93cb87080439704082a816 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fe0aa861aa99787cf930c973a6e73a72 = $(`<div id="html_fe0aa861aa99787cf930c973a6e73a72" style="width: 100.0%; height: 100.0%;">🆔 SN30246<br>FV2962 PAULER<br>5.5 °C<br>2026-05-14T19:10:00.000Z</div>`)[0];
+                popup_d65b2429ed93cb87080439704082a816.setContent(html_fe0aa861aa99787cf930c973a6e73a72);
+            
+        
+
+        marker_7eac625bec8081b0becd74184c4f70df.bindPopup(popup_d65b2429ed93cb87080439704082a816)
+        ;
+
+        
+    
+    
+                marker_7eac625bec8081b0becd74184c4f70df.setIcon(icon_51052b49d78261fa4c8c575a12e9330c);
+            
+    
+            var marker_2997abb0567490de46270cc5952d5923 = L.marker(
+                [58.9817, 9.6068],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_2ab8b2e9239cb0dff4e3426007078309 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c78539d264d6ca2af67c1dd622e8108d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0d8397de93d70e376ebdf585d83c765c = $(`<div id="html_0d8397de93d70e376ebdf585d83c765c" style="width: 100.0%; height: 100.0%;">🆔 SN34095<br>FV363 STOKKEBAKKEN<br>6.4 °C<br>2026-05-14T16:00:00.000Z</div>`)[0];
+                popup_c78539d264d6ca2af67c1dd622e8108d.setContent(html_0d8397de93d70e376ebdf585d83c765c);
+            
+        
+
+        marker_2997abb0567490de46270cc5952d5923.bindPopup(popup_c78539d264d6ca2af67c1dd622e8108d)
+        ;
+
+        
+    
+    
+                marker_2997abb0567490de46270cc5952d5923.setIcon(icon_2ab8b2e9239cb0dff4e3426007078309);
+            
+    
+            var marker_d5b6a94e1cd648baf1e7462a5a9759d7 = L.marker(
+                [59.1964044, 9.9641999],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_3eb96c23a98cdb9972f2670760487356 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2d3ad068e5693c5ce07476590c9e2c53 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a44c8a6eb8af10c31a5409b2a1fb2cb6 = $(`<div id="html_a44c8a6eb8af10c31a5409b2a1fb2cb6" style="width: 100.0%; height: 100.0%;">🆔 SN27800<br>HEDRUM<br>5.9 °C<br>2026-05-14T19:20:00.000Z</div>`)[0];
+                popup_2d3ad068e5693c5ce07476590c9e2c53.setContent(html_a44c8a6eb8af10c31a5409b2a1fb2cb6);
+            
+        
+
+        marker_d5b6a94e1cd648baf1e7462a5a9759d7.bindPopup(popup_2d3ad068e5693c5ce07476590c9e2c53)
+        ;
+
+        
+    
+    
+                marker_d5b6a94e1cd648baf1e7462a5a9759d7.setIcon(icon_3eb96c23a98cdb9972f2670760487356);
+            
+    
+            var marker_841cfa6819524e6070b9239f87ad79d2 = L.marker(
+                [59.2203, 9.983],
+                {
+}
+            ).addTo(map_df9d54bba570576adbdfffe27e740119);
+        
+    
+            var icon_80646e119990d362119f03b3d3c5a0e2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_dfa93dcb47c6ed4a949de99a0e21434f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c6cfd3dc0d1f03acb4a764875f61b033 = $(`<div id="html_c6cfd3dc0d1f03acb4a764875f61b033" style="width: 100.0%; height: 100.0%;">🆔 SN27860<br>KVELDE<br>5.8 °C<br>2026-05-14T19:00:00.000Z</div>`)[0];
+                popup_dfa93dcb47c6ed4a949de99a0e21434f.setContent(html_c6cfd3dc0d1f03acb4a764875f61b033);
+            
+        
+
+        marker_841cfa6819524e6070b9239f87ad79d2.bindPopup(popup_dfa93dcb47c6ed4a949de99a0e21434f)
+        ;
+
+        
+    
+    
+                marker_841cfa6819524e6070b9239f87ad79d2.setIcon(icon_80646e119990d362119f03b3d3c5a0e2);
+            
+</script>
+</html>
