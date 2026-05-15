@@ -71,44 +71,40 @@ def get_latest_temp(station_id):
 
 # ✅ 3. Plot map
 def main():
-    print("📍 Forecast location:", LAT, LON)
     stations = get_nearest_stations(maxcount=10)
 
-    # ✅ Map centered on your forecast location
     m = folium.Map(location=[LAT, LON], zoom_start=11)
 
-    # ✅ Add your forecast point
+    # ✅ ✅ ADD IT HERE
+    from datetime import datetime
+
     folium.Marker(
         [LAT, LON],
-        popup="📍 Forecast location",
+        popup=f"Last update: {datetime.utcnow()} UTC",
         icon=folium.Icon(color="blue")
     ).add_to(m)
 
+    # ✅ THEN your station markers
     for s in stations:
         obs = get_latest_temp(s["id"])
 
         if obs:
             temp, time = obs
             color = "green"
-            popup = (
-                f"🆔 {s['id']}<br>"
-                f"{s['name']}<br>"
-                f"{temp:.1f} °C<br>"
-                f"{time}"
-            )
+            popup = f"{s['id']}<br>{s['name']}<br>{temp:.1f} °C<br>{time}"
         else:
             color = "red"
-            popup = f"{s['name']}<br>❌ No recent data"
+            popup = f"{s['id']}<br>{s['name']}<br>No recent data"
 
         folium.Marker(
             location=[s["lat"], s["lon"]],
             popup=popup,
+            tooltip=s["id"],
             icon=folium.Icon(color=color)
         ).add_to(m)
 
-    # ✅ Save map
     m.save("station_map.html")
-    print("✅ Map saved as station_map.html")
+    print("✅ Map saved")
 
 
 if __name__ == "__main__":
