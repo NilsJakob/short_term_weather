@@ -6,6 +6,7 @@ from src.forecast import get_forecast
 from src.observations import get_observation
 from src.verification import verify
 from src.build_dataset import build_dataset
+
 # ✅ Ensure folders exist
 os.makedirs("data/forecasts", exist_ok=True)
 os.makedirs("data/observations", exist_ok=True)
@@ -19,6 +20,10 @@ def run():
     # ✅ 1. Get forecast
     forecast = get_forecast()
 
+    if forecast is None or forecast.empty:
+        print("❌ No forecast data")
+        return
+
     target_time = forecast["time_utc"].iloc[0]
     issued_at = pd.to_datetime(forecast["issued_at"].iloc[0])
     safe_time = issued_at.strftime("%Y-%m-%d_%H-%M-%S")
@@ -29,12 +34,24 @@ def run():
     print("✅ Forecast saved:", forecast_path)
 
     # ✅ 3. Get observation
+    print(f"\n📡 Fetching observation for {target_time}")
     obs = get_observation(target_time)
 
-    # 🔴 ✅ PUT YOUR CHECK RIGHT HERE
-    if obs.empty:
-        print("⏭ Skipping verification — no valid local observation yet")
+    # ✅ ✅ CRITICAL VALIDATION (prevents crash)
+    if obs is None:
+        print("❌ Observation is None")
         return
+
+    if obs.empty:
+        print("⏭ Skipping — observation is empty")
+        return
+
+    if "time_utc" not in obs.columns:
+        print(f"❌ Missing 'time_utc' in obs. Columns: {obs.columns}")
+        return
+
+    # ✅ Ensure datetime format
+    obs["time_utc"] = pd.to_datetime(obs["time_utc"], utc=True)
 
     # ✅ 4. Save observation
     obs_path = f"data/observations/{safe_time}.csv"
@@ -42,7 +59,12 @@ def run():
     print("✅ Observation saved:", obs_path)
 
     # ✅ 5. Verify
+    print("\n🔍 Running verification...")
     result = verify(forecast, obs)
+
+    if result is None or result.empty:
+        print("⚠️ No verification results produced")
+        return
 
     print("✅ Verified rows:", len(result))
 
@@ -50,6 +72,7 @@ def run():
     result_path = f"data/verified/{safe_time}.csv"
     result.to_csv(result_path, index=False)
     print("✅ Verification saved:", result_path)
+
 
 def verify_stored_forecasts():
     print("\n🔁 Running verification of stored forecasts")
@@ -64,11 +87,16 @@ def verify_stored_forecasts():
         print("\n📂 Processing:", f)
 
         forecast = pd.read_csv(f)
+
+        # ✅ Validate forecast
+        if "time_utc" not in forecast.columns:
+            print("❌ Missing time_utc in forecast, skipping")
+            continue
+
         forecast["time_utc"] = pd.to_datetime(forecast["time_utc"], utc=True)
 
         target_time = forecast["time_utc"].iloc[0]
         issued_at = pd.to_datetime(forecast["issued_at"].iloc[0])
-
         safe_time = issued_at.strftime("%Y-%m-%d_%H-%M-%S")
 
         # ✅ Skip future forecasts
@@ -78,20 +106,26 @@ def verify_stored_forecasts():
 
         print("✅ Verifying:", target_time)
 
-        # ✅ Fetch observations
+        # ✅ Fetch observation
         obs = get_observation(target_time)
+
+        # ✅ ✅ CRITICAL VALIDATION (prevents crash)
+        if obs is None or obs.empty or "time_utc" not in obs.columns:
+            print("⏭ Skipping — invalid observation data")
+            continue
+
         obs["time_utc"] = pd.to_datetime(obs["time_utc"], utc=True)
 
-        # ✅ Save observations
+        # ✅ Save observation
         obs_path = f"data/observations/{safe_time}.csv"
         obs.to_csv(obs_path, index=False)
         print("✅ Observation saved:", obs_path)
 
-        # ✅ Sort before merge_asof
+        # ✅ Sort before merge (important)
         forecast = forecast.sort_values("time_utc")
         obs = obs.sort_values("time_utc")
 
-        # ✅ Robust time alignment
+        # ✅ Robust alignment
         merged = pd.merge_asof(
             forecast,
             obs,
@@ -107,6 +141,10 @@ def verify_stored_forecasts():
         # ✅ Verify
         result = verify(forecast, obs)
 
+        if result is None or result.empty:
+            print("⚠️ No verification results")
+            continue
+
         result_path = f"data/verified/{safe_time}.csv"
         result.to_csv(result_path, index=False)
 
@@ -114,6 +152,13 @@ def verify_stored_forecasts():
 
 
 if __name__ == "__main__":
+    print("📁 Working directory:", os.getcwd())
+
     run()
     verify_stored_forecasts()
-    build_dataset()
+
+    try:
+        build_dataset()
+        print("✅ Dataset built")
+    except Exception as e:
+        print("⚠️ Dataset build failed:", e)
