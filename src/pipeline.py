@@ -92,9 +92,9 @@ def run():
             print("✅ Inserted into SQLite")
         except Exception as e:
             if "UNIQUE constraint failed" in str(e):
-            print("⏭ Duplicate skipped")
-        else:
-            print("❌ Unexpected DB error:", e)   # ✅ DO NOT raise
+                print("⏭ Duplicate skipped")
+            else:
+                print("❌ Unexpected DB error:", e)   # ✅ DO NOT raise
 
 
     print("✅ Verified rows:", len(result))
