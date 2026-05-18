@@ -14,6 +14,11 @@ os.makedirs("data/verified", exist_ok=True)
 os.makedirs("data", exist_ok=True)
 
 
+from pathlib import Path
+
+DB_PATH = Path("data/weather.db")
+DB_PATH.parent.mkdir(exist_ok=True)
+
 import os
 print("Current working directory:", os.getcwd())
 
@@ -172,3 +177,22 @@ if __name__ == "__main__":
         print("✅ Dataset built")
     except Exception as e:
         print("⚠️ Dataset build failed:", e)
+
+import sqlite3
+import pandas as pd
+
+conn = sqlite3.connect("data/weather.db")
+
+count = pd.read_sql("SELECT COUNT(*) as n FROM verification", conn)
+latest = pd.read_sql("""
+SELECT *
+FROM verification
+ORDER BY forecast_time DESC
+LIMIT 5
+""", conn)
+
+print("✅ Total rows in verification:", count["n"][0])
+print("✅ Latest rows:")
+print(latest)
+
+conn.close()

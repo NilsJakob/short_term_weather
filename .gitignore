@@ -1,10 +1,15 @@
-# Ignore generated data
-data/
+# Ignore everything in data
+data/*
 
-# Python cache
+# Keep database
+!data/weather.db
+
+# Optional: ignore exports
+*.csv
+
+# Python
 __pycache__/
 *.pyc
 
-# OS/IDE files
-.DS_Store
-Thumbs.db
+# Environment
+.env

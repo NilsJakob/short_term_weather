@@ -2,7 +2,7 @@ name: Weather Pipeline
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "0 * * * *"   # every hour
   workflow_dispatch:
 
 permissions:
@@ -15,44 +15,48 @@ jobs:
     steps:
       # ✅ Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      # ✅ Pull latest DB + repo state (CRITICAL)
+      - name: Pull latest changes
+        run: git pull
 
       # ✅ Setup Python
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      
+      # ✅ Install dependencies
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install --no-cache-dir -r requirements.txt
 
-
-      # ✅ Run pipeline
+      # ✅ Run pipeline (updates SQLite DB)
       - name: Run pipeline
         run: python -m src.pipeline
 
-      # ✅ 🔥 ADD THIS (missing in your run)
+      # ✅ Generate station map
       - name: Generate station map
         run: python plot_stations_map.py
-      
-      
+
+      # ✅ Upload DB as artifact (backup/debugging)
       - name: Upload SQLite DB
         uses: actions/upload-artifact@v4
         with:
           name: weather-db
           path: data/weather.db
 
-
-      # ✅ 🔥 ADD THIS (missing in your run)
-      - name: Commit updated map
+      # ✅ Commit BOTH DB and map in one step (cleaner & safer)
+      - name: Commit updates
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
 
+          git add data/weather.db
           git add -f station_map.html
-          git commit -m "Update station map" || echo "No changes"
+
+          git commit -m "Update database and station map" || echo "No changes"
 
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
