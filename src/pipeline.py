@@ -86,14 +86,16 @@ def run():
             pd.to_datetime(result["issued_at"])
         ).dt.total_seconds() / 60
 
+        
         try:
             result.to_sql("verification", conn, if_exists="append", index=False)
             print("✅ Inserted into SQLite")
         except Exception as e:
             if "UNIQUE constraint failed" in str(e):
-                print("⏭ Duplicate skipped")
-            else:
-                raise e
+            print("⏭ Duplicate skipped")
+        else:
+            print("❌ Unexpected DB error:", e)   # ✅ DO NOT raise
+
 
     print("✅ Verified rows:", len(result))
 
@@ -138,7 +140,13 @@ def verify_stored_forecasts(conn):
 
     files = glob.glob("data/forecasts/*.csv")
 
+    
+    latest_file = max(files)
+
     for f in files:
+        if f == latest_file:
+            continue   # ✅ skip current file (already processed)
+
         forecast = pd.read_csv(f)
 
         if "time_utc" not in forecast.columns:
