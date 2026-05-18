@@ -37,6 +37,14 @@ jobs:
       # ✅ 🔥 ADD THIS (missing in your run)
       - name: Generate station map
         run: python plot_stations_map.py
+      
+      
+      - name: Upload SQLite DB
+        uses: actions/upload-artifact@v4
+        with:
+          name: weather-db
+          path: data/weather.db
+
 
       # ✅ 🔥 ADD THIS (missing in your run)
       - name: Commit updated map

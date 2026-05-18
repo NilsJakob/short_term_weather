@@ -14,6 +14,16 @@ os.makedirs("data/verified", exist_ok=True)
 os.makedirs("data", exist_ok=True)
 
 
+import os
+print("Current working directory:", os.getcwd())
+
+
+import os
+
+print("WORKFLOW cwd:", os.getcwd())
+print("ABS path forecasts:", os.path.abspath("data/forecasts"))
+
+
 def run():
     print("\n🚀 Running pipeline")
 
