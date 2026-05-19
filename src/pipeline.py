@@ -39,6 +39,57 @@ def init_db(conn):
 
 
 # ✅ ---------------------------------------------------
+# UPSERT FUNCTION (REUSABLE ✅)
+# ✅ ---------------------------------------------------
+def upsert_verification(conn, df):
+    df["time_utc"] = df["time_utc"].astype(str)
+    df["issued_at"] = df["issued_at"].astype(str)
+
+    cursor = conn.cursor()
+
+    for _, row in df.iterrows():
+        cursor.execute("""
+            INSERT INTO verification (
+                time_utc,
+                temperature_fc,
+                wind_fc,
+                issued_at,
+                temperature_obs,
+                wind_obs,
+                temp_error,
+                wind_error,
+                station_id,
+                lead_time_minutes
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(time_utc)
+            DO UPDATE SET
+                temperature_fc = excluded.temperature_fc,
+                wind_fc = excluded.wind_fc,
+                issued_at = excluded.issued_at,
+                temperature_obs = excluded.temperature_obs,
+                wind_obs = excluded.wind_obs,
+                temp_error = excluded.temp_error,
+                wind_error = excluded.wind_error,
+                station_id = excluded.station_id,
+                lead_time_minutes = excluded.lead_time_minutes
+        """, (
+            row["time_utc"],
+            row["temperature_fc"],
+            row["wind_fc"],
+            row["issued_at"],
+            row["temperature_obs"],
+            row["wind_obs"],
+            row["temp_error"],
+            row["wind_error"],
+            row["station_id"],
+            row["lead_time_minutes"]
+        ))
+
+    conn.commit()
+
+
+# ✅ ---------------------------------------------------
 # MAIN PIPELINE
 # ✅ ---------------------------------------------------
 def run():
@@ -50,7 +101,6 @@ def run():
 
     # ✅ 1. Forecast
     forecast = get_forecast()
-
     if forecast is None or forecast.empty:
         print("❌ No forecast data")
         return
@@ -64,7 +114,6 @@ def run():
 
     # ✅ 2. Observation
     obs = get_observation(target_time)
-
     if obs is None or obs.empty:
         print("⏭ No observation")
         return
@@ -75,77 +124,50 @@ def run():
 
     # ✅ 3. Verification
     result = verify(forecast, obs)
-
     if result is None or result.empty:
         print("⚠️ No verification results")
-    else:
-        print("✅ Verified rows:", len(result))
-
-        result["lead_time_minutes"] = (
-            pd.to_datetime(result["time_utc"]) -
-            pd.to_datetime(result["issued_at"])
-        ).dt.total_seconds() / 60
-
-        
-        try:
-            result.to_sql("verification", conn, if_exists="append", index=False)
-            print("✅ Inserted into SQLite")
-        except Exception as e:
-            if "UNIQUE constraint failed" in str(e):
-                print("⏭ Duplicate skipped")
-            else:
-                print("❌ Unexpected DB error:", e)   # ✅ DO NOT raise
-
+        return
 
     print("✅ Verified rows:", len(result))
 
+    # ✅ Lead time
     result["lead_time_minutes"] = (
         pd.to_datetime(result["time_utc"]) -
         pd.to_datetime(result["issued_at"])
     ).dt.total_seconds() / 60
 
-    # ✅ SAVE CSV
+    # ✅ Save CSV
     result.to_csv(f"data/verified/{safe_time}.csv", index=False)
 
-    # ✅ INSERT INTO SQLITE (single clean insert)
-    try:
-        result.to_sql("verification", conn, if_exists="append", index=False)
-        print("✅ Inserted into SQLite")
-    except Exception as e:
-        if "UNIQUE constraint failed" in str(e):
-            print("⏭ Duplicate skipped")
-        else:
-            raise e
+    # ✅ UPSERT (single clean insert ✅)
+    upsert_verification(conn, result)
+    print("✅ Upserted into SQLite")
 
-    # ✅ Backfill / historical verification
+    # ✅ Backfill history
     verify_stored_forecasts(conn)
 
     # ✅ Debug count
-    try:
-        count = pd.read_sql("SELECT COUNT(*) as n FROM verification", conn)
-        print("✅ Rows in DB:", count["n"][0])
-    except Exception as e:
-        print("⚠️ Could not read DB (likely empty):", e)
-
+    count = pd.read_sql("SELECT COUNT(*) as n FROM verification", conn)
     print("✅ Rows in DB:", count["n"][0])
 
     conn.close()
 
 
 # ✅ ---------------------------------------------------
-# VERIFY STORED FORECASTS
+# VERIFY STORED FORECASTS (FIXED ✅)
 # ✅ ---------------------------------------------------
 def verify_stored_forecasts(conn):
     print("\n🔁 Running stored forecast verification")
 
     files = glob.glob("data/forecasts/*.csv")
+    if not files:
+        return
 
-    
     latest_file = max(files)
 
     for f in files:
         if f == latest_file:
-            continue   # ✅ skip current file (already processed)
+            continue
 
         forecast = pd.read_csv(f)
 
@@ -160,24 +182,21 @@ def verify_stored_forecasts(conn):
             continue
 
         obs = get_observation(target_time)
-
-        if obs is None or obs.empty or "time_utc" not in obs.columns:
+        if obs is None or obs.empty:
             continue
 
         obs["time_utc"] = pd.to_datetime(obs["time_utc"], utc=True)
 
         result = verify(forecast, obs)
-
         if result is None or result.empty:
             continue
 
-        try:
-            result.to_sql("verification", conn, if_exists="append", index=False)
-        except Exception as e:
-            if "UNIQUE constraint failed" in str(e):
-                print("⏭ Duplicate skipped (history)")
-            else:
-                raise e
+        result["lead_time_minutes"] = (
+            pd.to_datetime(result["time_utc"]) -
+            pd.to_datetime(result["issued_at"])
+        ).dt.total_seconds() / 60
+
+        upsert_verification(conn, result)
 
 
 # ✅ ---------------------------------------------------
