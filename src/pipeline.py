@@ -17,9 +17,9 @@ os.makedirs("data/verified", exist_ok=True)
 DB_PATH = Path("data/weather.db")
 
 
-# ✅ ---------------------------------------------------
+# ✅ -----------------------------
 # DATABASE SETUP
-# ✅ ---------------------------------------------------
+# ✅ -----------------------------
 def init_db(conn):
     conn.execute("""
     CREATE TABLE IF NOT EXISTS verification (
@@ -38,9 +38,9 @@ def init_db(conn):
     conn.commit()
 
 
-# ✅ ---------------------------------------------------
-# UPSERT FUNCTION (REUSABLE ✅)
-# ✅ ---------------------------------------------------
+# ✅ -----------------------------
+# UPSERT FUNCTION
+# ✅ -----------------------------
 def upsert_verification(conn, df):
     df["time_utc"] = df["time_utc"].astype(str)
     df["issued_at"] = df["issued_at"].astype(str)
@@ -89,9 +89,9 @@ def upsert_verification(conn, df):
     conn.commit()
 
 
-# ✅ ---------------------------------------------------
+# ✅ -----------------------------
 # MAIN PIPELINE
-# ✅ ---------------------------------------------------
+# ✅ -----------------------------
 def run():
     print("\n🚀 Running pipeline")
 
@@ -99,7 +99,7 @@ def run():
     init_db(conn)
     print("✅ DB ready")
 
-    # ✅ 1. Forecast
+    # ✅ 1. Fetch forecast
     forecast = get_forecast()
     if forecast is None or forecast.empty:
         print("❌ No forecast data")
@@ -112,50 +112,53 @@ def run():
     forecast.to_csv(f"data/forecasts/{safe_time}.csv", index=False)
     print("✅ Forecast saved")
 
-    # ✅ 2. Observation
+    # ✅ 2. Fetch observation
     obs = get_observation(target_time)
-    if obs is None or obs.empty:
-        print("⏭ No observation")
-        return
 
-    obs["time_utc"] = pd.to_datetime(obs["time_utc"], utc=True)
-    obs.to_csv(f"data/observations/{safe_time}.csv", index=False)
-    print("✅ Observation saved")
+    print("🔍 Observation columns:", getattr(obs, "columns", []))
 
-    # ✅ 3. Verification
-    result = verify(forecast, obs)
-    if result is None or result.empty:
-        print("⚠️ No verification results")
-        return
+    # ✅ Validate observation BEFORE using it
+    if obs is None or obs.empty or "time_utc" not in obs.columns:
+        print("⏭ No valid observation data (will be backfilled later)")
+    else:
+        print("✅ Observation valid")
 
-    print("✅ Verified rows:", len(result))
+        obs["time_utc"] = pd.to_datetime(obs["time_utc"], utc=True)
+        obs.to_csv(f"data/observations/{safe_time}.csv", index=False)
+        print("✅ Observation saved")
 
-    # ✅ Lead time
-    result["lead_time_minutes"] = (
-        pd.to_datetime(result["time_utc"]) -
-        pd.to_datetime(result["issued_at"])
-    ).dt.total_seconds() / 60
+        # ✅ 3. Verification (ONLY here ✅)
+        result = verify(forecast, obs)
 
-    # ✅ Save CSV
-    result.to_csv(f"data/verified/{safe_time}.csv", index=False)
+        if result is not None and not result.empty:
+            print("✅ Verified rows:", len(result))
 
-    # ✅ UPSERT (single clean insert ✅)
-    upsert_verification(conn, result)
-    print("✅ Upserted into SQLite")
+            result["lead_time_minutes"] = (
+                pd.to_datetime(result["time_utc"], utc=True) -
+                pd.to_datetime(result["issued_at"], utc=True)
+            ).dt.total_seconds() / 60
 
-    # ✅ Backfill history
+            result.to_csv(f"data/verified/{safe_time}.csv", index=False)
+
+            upsert_verification(conn, result)
+            print("✅ Upserted into SQLite")
+
+    # ✅ 4. Backfill older forecasts
     verify_stored_forecasts(conn)
 
-    # ✅ Debug count
-    count = pd.read_sql("SELECT COUNT(*) as n FROM verification", conn)
-    print("✅ Rows in DB:", count["n"][0])
+    # ✅ Debug DB size
+    try:
+        count = pd.read_sql("SELECT COUNT(*) as n FROM verification", conn)
+        print("✅ Rows in DB:", count["n"][0])
+    except Exception as e:
+        print("⚠️ Could not read DB:", e)
 
     conn.close()
 
 
-# ✅ ---------------------------------------------------
-# VERIFY STORED FORECASTS (FIXED ✅)
-# ✅ ---------------------------------------------------
+# ✅ -----------------------------
+# BACKFILL FUNCTION
+# ✅ -----------------------------
 def verify_stored_forecasts(conn):
     print("\n🔁 Running stored forecast verification")
 
@@ -175,14 +178,13 @@ def verify_stored_forecasts(conn):
             continue
 
         forecast["time_utc"] = pd.to_datetime(forecast["time_utc"], utc=True)
-
         target_time = forecast["time_utc"].iloc[0]
 
-        if target_time > pd.Timestamp.now('UTC'):
+        if target_time > pd.Timestamp.now("UTC"):
             continue
 
         obs = get_observation(target_time)
-        if obs is None or obs.empty:
+        if obs is None or obs.empty or "time_utc" not in obs.columns:
             continue
 
         obs["time_utc"] = pd.to_datetime(obs["time_utc"], utc=True)
@@ -192,16 +194,16 @@ def verify_stored_forecasts(conn):
             continue
 
         result["lead_time_minutes"] = (
-            pd.to_datetime(result["time_utc"]) -
-            pd.to_datetime(result["issued_at"])
+            pd.to_datetime(result["time_utc"], utc=True) -
+            pd.to_datetime(result["issued_at"], utc=True)
         ).dt.total_seconds() / 60
 
         upsert_verification(conn, result)
 
 
-# ✅ ---------------------------------------------------
+# ✅ -----------------------------
 # ENTRY POINT
-# ✅ ---------------------------------------------------
+# ✅ -----------------------------
 if __name__ == "__main__":
     run()
 
